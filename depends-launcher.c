@@ -1,4 +1,5 @@
 #pragma comment(lib, "user32.lib")
+#pragma comment(lib, "imagehlp.lib")
 #define _ISOC99_SOURCE
 
 // Use wchar_t
@@ -10,6 +11,7 @@
 #define VC_EXTRALEAN
 
 #include <windows.h>
+#include <imagehlp.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <io.h>
@@ -18,6 +20,23 @@
 #define SZ_EXE 16
 static const wchar_t x86exe[] = L"\\x86\\depends.exe";
 static const wchar_t x64exe[] = L"\\x64\\depends.exe";
+
+BOOL MapAndLoadW(LPWSTR imgPath, PLOADED_IMAGE lpImg)
+{
+	wchar_t lpImgPathW[_MAX_PATH+1] = L"";
+	char lpImgPathA[_MAX_PATH+1] = "",
+	lpImgNameA[_MAX_PATH+1] = "",
+	lpImgDirA[_MAX_PATH+1] = "";
+	size_t szDllPathW;
+	
+	if(_wfullpath(lpImgPathW, (LPCWSTR)imgPath, _MAX_PATH) == NULL) return FALSE;
+	if((szDllPathW = wcslen(lpImgPathW)) == 0) return FALSE;
+	if(wcstombs(lpImgPathA, (LPCWSTR)lpImgPathW, szDllPathW) == -1) return FALSE;
+	strcpy(lpImgNameA ,(LPCSTR)(strrchr(lpImgPathA, '\\') + 1));
+	*(strrchr(lpImgPathA, '\\')) = '\0';
+	strcpy(lpImgDirA, (LPCSTR)lpImgPathA);
+	return MapAndLoad(lpImgNameA, lpImgDirA, lpImg, FALSE, TRUE);
+}
 
 
 BOOL GetParentDir(LPWSTR parentDir, size_t* lpszParentDir)
@@ -35,7 +54,7 @@ int WINAPI wWinMain(HINSTANCE hInstance,
 	int nCmdShow)
 {
 	int i;
-	DWORD lpBinaryType;
+	LOADED_IMAGE oImg;
 	LPWSTR lpCmdLine;
 	wchar_t parentDir[_MAX_PATH+1], exePath[_MAX_PATH+1] = L"", errMsg[ERRMSG_MAX];
 	size_t szParentDir, szExeStr, szCmdLine;
@@ -45,22 +64,25 @@ int WINAPI wWinMain(HINSTANCE hInstance,
 	LPWSTR *argv = __wargv;
 	int argc = __argc;
 	
+	// Zero out our loaded image struct.
+	ZeroMemory(&oImg, sizeof(oImg));
+	
 	/* Make sure we have args. */
 	if(argc == 1) {
-		swprintf(errMsg, ERRMSG_MAX, L"No executables specified.\n");
+		swprintf(errMsg, ERRMSG_MAX, L"No images specified.\n");
 		MessageBoxW(NULL, errMsg, L"Error", MB_OK | MB_ICONERROR);
 		return dwExitCode;
 	}
 	
 	/* Get our exe's parent folder. */
 	if(!GetParentDir(parentDir, &szParentDir)) {
-		wsprintf(L"Could not get parent folder of executable, \"%s\". This should not happen ever.\n", argv[0]);
+		wsprintf(L"Could not get parent folder of image, \"%s\". This should not happen ever.\n", argv[0]);
 		MessageBoxW(NULL, errMsg, L"Error", MB_OK | MB_ICONERROR);
 		return dwExitCode;
 	}
 	
 	/* Calculate the length of the eventual exe path with surrounding quotes. */
-	szExeStr = szParentDir + SZ_EXE + 2; // +2 for the two "s surrounding the executable path.
+	szExeStr = szParentDir + SZ_EXE + 2; // +2 for the two "s surrounding the image path.
 	
 	/* Iterate through our arguments */
 	for(i = 1; i < argc; i++) {
@@ -74,20 +96,31 @@ int WINAPI wWinMain(HINSTANCE hInstance,
 		}
 		
 		/* Get the binary type. */
-		if(!GetBinaryType((LPCWSTR)argv[i], &lpBinaryType)) {
-			swprintf(errMsg, ERRMSG_MAX, L"Unable to get binary type for executable.\nExecutable: %s\n", argv[i]);
+		if(!MapAndLoadW(argv[i], &oImg)) {
+			swprintf(errMsg, ERRMSG_MAX, L"Unable to get binary type for image.\nImage: %s\n", argv[i]);
 			MessageBoxW(NULL, errMsg, L"Error", MB_OK | MB_ICONERROR);
 			return dwExitCode;
 		}
 		
-		/* Construct our exe path. */
 		wcscpy(exePath, parentDir);
-		if(lpBinaryType == SCS_32BIT_BINARY) {
-			wcscat(exePath, x86exe);
-		} else if(lpBinaryType == SCS_64BIT_BINARY) {
-			wcscat(exePath, x64exe);
-		} else {
-			swprintf(errMsg, ERRMSG_MAX, L"Unknown binary type returned for executable.\nExecutable: %s\n\nBinary Type: %d", argv[i], lpBinaryType);
+		switch(oImg.FileHeader->FileHeader.Machine)
+		{
+			case IMAGE_FILE_MACHINE_I386:
+				wcscat(exePath, x86exe);
+				break;
+			// TODO: Differentiate between x64 platforms.
+			case IMAGE_FILE_MACHINE_AMD64:
+			case IMAGE_FILE_MACHINE_IA64:
+				wcscat(exePath, x64exe);
+				break;
+			default:
+				swprintf(errMsg, ERRMSG_MAX, L"Unknown binary type returned for image.\nImage: %s\n\nBinary Type: %d", argv[i], oImg.FileHeader->FileHeader.Machine);
+				MessageBoxW(NULL, errMsg, L"Error", MB_OK | MB_ICONERROR);
+				return dwExitCode;
+		}
+
+		if(!UnMapAndLoad(&oImg)) {
+			swprintf(errMsg, ERRMSG_MAX, L"Failed to unload/unmap image.\nImage: %s\n", argv[i]);
 			MessageBoxW(NULL, errMsg, L"Error", MB_OK | MB_ICONERROR);
 			return dwExitCode;
 		}
