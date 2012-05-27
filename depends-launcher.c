@@ -17,9 +17,12 @@
 #include <io.h>
 
 #define ERRMSG_MAX 1280
-#define SZ_EXE 16
+#define SZ_86_EXE 16
+#define SZ_AMD_EXE 18
+#define SZ_IA_EXE 17
 static const wchar_t x86exe[] = L"\\x86\\depends.exe";
-static const wchar_t x64exe[] = L"\\x64\\depends.exe";
+static const wchar_t amd64exe[] = L"\\amd64\\depends.exe";
+static const wchar_t ia64exe[] = L"\\ia64\\depends.exe";
 
 BOOL MapAndLoadW(LPWSTR imgPath, PLOADED_IMAGE lpImg)
 {
@@ -57,7 +60,7 @@ int WINAPI wWinMain(HINSTANCE hInstance,
 	LOADED_IMAGE oImg;
 	LPWSTR lpCmdLine;
 	wchar_t parentDir[_MAX_PATH+1], exePath[_MAX_PATH+1] = L"", errMsg[ERRMSG_MAX];
-	size_t szParentDir, szExeStr, szCmdLine;
+	size_t szParentDir, szExeStr, szCmdLine, szPlatExe;
 	PROCESS_INFORMATION pi;
 	STARTUPINFO si;
 	int dwExitCode = 1;
@@ -80,9 +83,6 @@ int WINAPI wWinMain(HINSTANCE hInstance,
 		MessageBoxW(NULL, errMsg, L"Error", MB_OK | MB_ICONERROR);
 		return dwExitCode;
 	}
-	
-	/* Calculate the length of the eventual exe path with surrounding quotes. */
-	szExeStr = szParentDir + SZ_EXE + 2; // +2 for the two "s surrounding the image path.
 	
 	/* Iterate through our arguments */
 	for(i = 1; i < argc; i++) {
@@ -107,11 +107,16 @@ int WINAPI wWinMain(HINSTANCE hInstance,
 		{
 			case IMAGE_FILE_MACHINE_I386:
 				wcscat(exePath, x86exe);
+				szPlatExe = SZ_86_EXE;
 				break;
 			// TODO: Differentiate between x64 platforms.
 			case IMAGE_FILE_MACHINE_AMD64:
+				wcscat(exePath, amd64exe);
+				szPlatExe = SZ_AMD_EXE;
+				break;
 			case IMAGE_FILE_MACHINE_IA64:
-				wcscat(exePath, x64exe);
+				wcscat(exePath, ia64exe);
+				szPlatExe = SZ_IA_EXE;
 				break;
 			default:
 				swprintf(errMsg, ERRMSG_MAX, L"Unknown binary type returned for image.\nImage: %s\n\nBinary Type: %d", argv[i], oImg.FileHeader->FileHeader.Machine);
@@ -124,6 +129,9 @@ int WINAPI wWinMain(HINSTANCE hInstance,
 			MessageBoxW(NULL, errMsg, L"Error", MB_OK | MB_ICONERROR);
 			return dwExitCode;
 		}
+		
+		/* Calculate the length of the eventual exe path with surrounding quotes. */
+		szExeStr = szParentDir + szPlatExe + 2; // +2 for the two "s surrounding the image path.
 		
 		/* Allocate our command line string. */
 		// szExeStr+         1 +1+wcslen(argv)+1

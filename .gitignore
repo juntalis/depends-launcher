@@ -3,4 +3,6 @@
 *.ico
 *.reg
 x86
-x64
+amd64
+ia64
+obj

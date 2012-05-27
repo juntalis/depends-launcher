@@ -12,13 +12,10 @@ rem Set our output files/folders.
 set _OBJFILE=%_ROOTDIR%obj\%_PREFIX%.zip
 set _OUTDIR=%_ROOTDIR%%_PREFIX%
 
-rem Figure out our platform info
-call "%~dp0platform.bat" %*
-
 rem Figure out url to use
-if "%TARGET_PLATFORM%"=="x86" set _URL=http://www.dependencywalker.com/depends22_x86.zip
-if "%TARGET_PLATFORM%"=="amd64" set _URL=http://www.dependencywalker.com/depends22_x64.zip
-if "%TARGET_PLATFORM%"=="ia64" set _URL=http://www.dependencywalker.com/depends22_ia64.zip
+if "%_PREFIX%"=="x86" set _URL=http://www.dependencywalker.com/depends22_x86.zip
+if "%_PREFIX%"=="amd64" set _URL=http://www.dependencywalker.com/depends22_x64.zip
+if "%_PREFIX%"=="ia64" set _URL=http://www.dependencywalker.com/depends22_ia64.zip
 if "%_URL%x"=="x" ((set "ERRMSG=Could not figure out the url to download.") && (goto ErrorMsg))
 
 rem Download our file.

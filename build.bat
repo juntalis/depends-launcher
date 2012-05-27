@@ -26,8 +26,10 @@ exit /B 0
 if not exist "%~dp0x86\depends.exe" ((echo Setting up x86 Dependency Walker..) && (call "%UTILDIR%setup_depends.bat" x86))
 if ERRORLEVEL 1 goto SilentError
 
+if not exist "%~dp0x64\depends.exe" ((echo Setting up amd64 Dependency Walker..) && (call "%UTILDIR%setup_depends.bat" amd64))
+if ERRORLEVEL 1 goto SilentError
 
-if not exist "%~dp0x64\depends.exe" ((echo Setting up x64 Dependency Walker..) && (call "%UTILDIR%setup_depends.bat" x64))
+if not exist "%~dp0x64\depends.exe" ((echo Setting up ia64 Dependency Walker..) && (call "%UTILDIR%setup_depends.bat" ia64))
 if ERRORLEVEL 1 goto SilentError
 
 if not exist "%~dp0depends.ico" ((echo Extracting depends icon..) && (call "%UTILDIR%extract_icon.bat" "%~dp0x86\depends.exe"))
