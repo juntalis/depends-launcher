@@ -1,4 +1,4 @@
-Simple launcher for [Dependency Walker](http://www.dependencywalker.com/) that determines the platform (x86|x64|ia64) of an exe and launches the appropriate version of depends.exe to view its dependencies. It's main purpose is for use in a context menu entry to easily view an exe's dependencies.
+Simple launcher for [Dependency Walker](http://www.dependencywalker.com/) that determines the platform (x86|x64|ia64) of an windows image (dll, exe, etc) and launches the appropriate version of depends.exe to view its dependencies. It's main purpose is for use in a context menu entry to easily view an image's dependencies.
 
 ## Building
 The **build.bat** file should automate the process of building. It downloads the appropriate versions of Dependency Walker and sets up the necessary subfolders. Additionally, it will generate registry files to add the program to the context menu for .exe files.
