@@ -1,0 +1,2 @@
+#define DEPENDS_ICON 0
+DEPENDS_ICON ICON "depends.ico"
