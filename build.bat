@@ -4,7 +4,7 @@ setlocal
 set OUTEXE=%~dp0depends-launcher.exe
 set CFLAGS=/nologo /W3 /WX- /O2 /Ob2 /Oi /Oy /GL /DWIN32 /D_NDEBUG /D_CRT_SECURE_NO_WARNINGS /GF /Gm- /MD /GS- /Gy /fp:precise /Zc:wchar_t /Zc:forScope
 set LDFLAGS=/nologo /OPT:REF /OPT:ICF /LTCG
-set UTILDIR=%~dp0util\
+set TOOLSDIR=%~dp0tools\
 set OBJDIR=%~dp0obj\
 set BUILD_PLATFORM=
 set BUILD_CMD=
@@ -23,16 +23,16 @@ exit /B 0
 :SetupDepends
 :: Download our necessary depends.exe files.
 
-if not exist "%~dp0x86\depends.exe" ((echo Setting up x86 Dependency Walker..) && (call "%UTILDIR%setup_depends.bat" x86))
+if not exist "%~dp0x86\depends.exe" ((echo Setting up x86 Dependency Walker..) && (call "%TOOLSDIR%setup_depends.bat" x86))
 if ERRORLEVEL 1 goto SilentError
 
-if not exist "%~dp0x64\depends.exe" ((echo Setting up amd64 Dependency Walker..) && (call "%UTILDIR%setup_depends.bat" amd64))
+if not exist "%~dp0x64\depends.exe" ((echo Setting up amd64 Dependency Walker..) && (call "%TOOLSDIR%setup_depends.bat" amd64))
 if ERRORLEVEL 1 goto SilentError
 
-if not exist "%~dp0x64\depends.exe" ((echo Setting up ia64 Dependency Walker..) && (call "%UTILDIR%setup_depends.bat" ia64))
+if not exist "%~dp0x64\depends.exe" ((echo Setting up ia64 Dependency Walker..) && (call "%TOOLSDIR%setup_depends.bat" ia64))
 if ERRORLEVEL 1 goto SilentError
 
-if not exist "%~dp0depends.ico" ((echo Extracting depends icon..) && (call "%UTILDIR%extract_icon.bat" "%~dp0x86\depends.exe"))
+if not exist "%~dp0depends.ico" ((echo Extracting depends icon..) && (call "%TOOLSDIR%extract_icon.bat" "%~dp0x86\depends.exe"))
 if ERRORLEVEL 1 goto SilentError
 
 goto :EOF
@@ -76,9 +76,9 @@ goto :EOF
 set _SUFFIX=
 if "%~1"=="x86" set _SUFFIX=32
 if "%~1"=="x64" set _SUFFIX=64
-call "%UTILDIR%cl.bat" %~1 /nologo /Ox /Os /c /MD "/Fo%OBJDIR%noop%_SUFFIX%.obj" "%~dp0tests\noop.c"
+call "%TOOLSDIR%cl.bat" %~1 /nologo /Ox /Os /c /MD "/Fo%OBJDIR%noop%_SUFFIX%.obj" "%~dp0tests\noop.c"
 if ERRORLEVEL 1 goto SilentError
-call "%UTILDIR%link.bat" %~1 /nologo /SUBSYSTEM:CONSOLE /MACHINE:%~1 "/OUT:%~dp0tests\noop%_SUFFIX%.exe" "%OBJDIR%noop%_SUFFIX%.obj" kernel32.lib
+call "%TOOLSDIR%link.bat" %~1 /nologo /SUBSYSTEM:CONSOLE /MACHINE:%~1 "/OUT:%~dp0tests\noop%_SUFFIX%.exe" "%OBJDIR%noop%_SUFFIX%.obj" kernel32.lib
 if ERRORLEVEL 1 goto SilentError
 goto :EOF
 
@@ -96,9 +96,9 @@ echo.
 goto :EOF
 
 :BuildExe
-set CL_CMD="%UTILDIR%cl.bat"
-set LINK_CMD="%UTILDIR%link.bat"
-set RC_CMD="%UTILDIR%rc.bat"
+set CL_CMD="%TOOLSDIR%cl.bat"
+set LINK_CMD="%TOOLSDIR%link.bat"
+set RC_CMD="%TOOLSDIR%rc.bat"
 if "%BUILD_PLATFORM%x"=="x" if "%PROCESSOR_ARCHITECTURE%"=="X86" if not defined PROCESSOR_ARCHITEW6432 set BUILD_PLATFORM=x86
 if "%BUILD_PLATFORM%x"=="x" if "%PROCESSOR_ARCHITECTURE%"=="IA64" set BUILD_PLATFORM=x64
 if "%BUILD_PLATFORM%x"=="x" if "%PROCESSOR_ARCHITECTURE%"=="AMD64" set BUILD_PLATFORM=x64
