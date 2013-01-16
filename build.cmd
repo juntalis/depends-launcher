@@ -1,7 +1,7 @@
-@ECHO OFF
+@echo off
 setlocal
 :: Globals
-set OUTEXE=%~dp0depends-launcher.exe
+set OUTEXE=%~dp0depends.exe
 set CFLAGS=/nologo /W3 /WX- /O2 /Ob2 /Oi /Oy /GL /DWIN32 /D_NDEBUG /D_CRT_SECURE_NO_WARNINGS /GF /Gm- /MD /GS- /Gy /fp:precise /Zc:wchar_t /Zc:forScope
 set LDFLAGS=/nologo /OPT:REF /OPT:ICF /LTCG
 set TOOLSDIR=%~dp0tools\
