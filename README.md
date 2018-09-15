@@ -1,8 +1,10 @@
-Simple launcher for [Dependency Walker](http://www.dependencywalker.com/) that determines the platform (x86|x64|ia64) of an windows image (dll, exe, etc) and launches the appropriate version of depends.exe to view its dependencies. It's main purpose is for use in a context menu entry to easily view an image's dependencies.
+Simple launcher for [Dependency Walker](http://www.dependencywalker.com/) that determines the platform (x86|x64|ia64) of a windows image (dll, exe, etc) and launches the appropriate version of depends.exe to view its dependencies. Its main purpose is for use in a context menu entry to easily view an image's dependencies.
 
 ## For Pre-Packaged Releases
 
 Running the **setup.cmd** file included in the zip file should download all required versions of Dependency Walker. If not, let me know.
+
+Sorry, no registry files for you.
 
 ## Building
 
