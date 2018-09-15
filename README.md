@@ -8,7 +8,7 @@ Running the **setup.cmd** file included in the zip file should download all requ
 
 **Note**: Coming back to this way later, the build script approach was a bad call. I recently updated it to hopefully support all VC versions between 2005-2015, but drop an issue if you can't build it or need something for 2015+.
 
-The **build.bat** file should automate the process of building. It downloads the appropriate versions of Dependency Walker and sets up the necessary subfolders. Additionally, it will generate registry files to add the program to the context menu for .exe files.
+The **build.cmd** file should automate the process of building. It downloads the appropriate versions of Dependency Walker and sets up the necessary subfolders. Additionally, it will generate registry files to add the program to the context menu for .exe files.
 
 **Example Usage:**
 
