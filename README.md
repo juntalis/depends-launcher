@@ -2,7 +2,7 @@ Simple launcher for [Dependency Walker](http://www.dependencywalker.com/) that d
 
 ## For Pre-Packaged Releases
 
-Running the setup.cmd file included in the zip file should download all required versions of Dependency Walker. If not, let me know.
+Running the **setup.cmd** file included in the zip file should download all required versions of Dependency Walker. If not, let me know.
 
 ## Building
 
@@ -12,15 +12,15 @@ The **build.bat** file should automate the process of building. It downloads the
 
 **Example Usage:**
 
-	build.bat
+	build.cmd
 
 Will download the appropriate files, and build the main executable.
 
-	build.bat test
+	build.cmd test
 
 Will download the appropriate files, build the main executable, in addition to some small tests, then run the main executable against the tests.
 
-	build.bat help
+	build.cmd help
 
 Will print usage info that includes any other args that can be specified.
 
