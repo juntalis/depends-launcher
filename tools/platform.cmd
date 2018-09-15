@@ -1,0 +1,13 @@
+@echo off
+set "TARGET_PLATFORM=%~1"
+if not defined TARGET_PLATFORM set TARGET_PLATFORM=%PROCESSOR_ARCHITECTURE%
+if /i "%TARGET_PLATFORM%"=="x86" goto :EOF
+if /i "%TARGET_PLATFORM:~-2%"=="64" (
+	if "%PROCESSOR_ARCHITECTURE%"=="x86" if not defined PROCESSOR_ARCHITEW6432 ((set TARGET_PLATFORM=x86_amd64) && (goto :EOF))
+	if "%PROCESSOR_ARCHITECTURE%"=="IA64" ((set TARGET_PLATFORM=ia64) && (goto :EOF))
+	if "%PROCESSOR_ARCHITEW6432%"=="IA64" ((set TARGET_PLATFORM=ia64) && (goto :EOF))
+	set TARGET_PLATFORM=amd64
+	goto :EOF
+)
+echo ERROR: Unknown platform: "%TARGET_PLATFORM%"!
+exit /B 1
