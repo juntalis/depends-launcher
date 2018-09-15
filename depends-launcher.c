@@ -234,8 +234,6 @@ int WINAPI wWinMain(HINSTANCE hInstance,
 	int i, argc = __argc;
 	LPWSTR *wargv = __wargv;
 	
-	DebugMessage(L"lpOriginalCmdLine = %s", lpOriginalCmdLine);
-	
 	/* Make sure we have args. */
 	if(argc == 1) {
 		Fatal(ERROR_INVALID_FUNCTION, L"No images specified.");
@@ -247,9 +245,6 @@ int WINAPI wWinMain(HINSTANCE hInstance,
 		Fatal(ERROR_PATH_NOT_FOUND, L"Could not get parent folder of image, \"%s\". This should not happen ever.", wargv[0]);
 	}
 	
-	
-	DebugMessage(L"%s (%zu chars)", parentDir, szParentDir);
-
 	/* Iterate through our arguments */
 	for(i = 1; i < argc; i++) {
 		LPWSTR lpCmdLine;

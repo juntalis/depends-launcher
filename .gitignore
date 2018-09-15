@@ -6,3 +6,5 @@ x86
 amd64
 ia64
 obj
+win32.zip
+win64.zip
