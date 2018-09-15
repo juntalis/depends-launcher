@@ -26,6 +26,7 @@ if errorlevel 1 set /A FAILED_COUNT=%FAILED_COUNT% + 1
 
 if %FAILED_COUNT% GTR 0 goto failures
 echo Successfully setup all 3 targeted versions of depends!
+call rmdir /S /Q "%~dp0obj" >nul 2>nul
 pause
 goto :EOF
 
